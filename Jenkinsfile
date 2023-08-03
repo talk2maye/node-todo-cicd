@@ -1,22 +1,20 @@
 pipeline {
-    agent { label "dev-server" }
+    agent any
     stages{
         stage("Clone Code"){
             steps{
-                git url: "https://github.com/LondheShubham153/node-todo-cicd.git", branch: "master"
+                git url: "git@github.com:talk2maye/node-todo-cicd.git", branch: "working"
             }
         }
         stage("Build and Test"){
             steps{
-                sh "docker build . -t node-app-test-new"
+                sh "docker build . -t mayehunta/todoweb:v1"
             }
         }
-        stage("Push to Docker Hub"){
+        stage("Login and Push image"){
             steps{
-                withCredentials([usernamePassword(credentialsId:"dockerHub",passwordVariable:"dockerHubPass",usernameVariable:"dockerHubUser")]){
-                sh "docker tag node-app-test-new ${env.dockerHubUser}/node-app-test-new:latest"
-                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPass}"
-                sh "docker push ${env.dockerHubUser}/node-app-test-new:latest"
+                echo "logging in to docker hub and pushing image.."
+                sh "docker push mayehunta/todoweb:v1"
                 }
             }
         }
